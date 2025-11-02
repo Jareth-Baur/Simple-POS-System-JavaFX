@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="controllers.RegisterController"
+            prefWidth="400" prefHeight="550"
+            styleClass="auth-pane register">
+
+    <VBox alignment="CENTER" layoutX="50" layoutY="100" prefWidth="300" styleClass="auth-box">
+        <Label text="Create Account" styleClass="auth-title" />
+
+        <TextField fx:id="emailField" promptText="Email" styleClass="text-input" />
+        <PasswordField fx:id="passwordField" promptText="Password" styleClass="text-input" />
+
+        <Button text="Register" onAction="#handleRegister" styleClass="auth-button" />
+
+        <Hyperlink text="Already have an account? Login"
+                   onAction="#switchToLogin"
+                   styleClass="auth-link" />
+    </VBox>
+</AnchorPane>
