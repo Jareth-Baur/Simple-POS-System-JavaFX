@@ -1,0 +1,174 @@
+/* ======= GLOBAL THEME ======= */
+.root {
+    -fx-font-family: "Segoe UI", "Roboto", sans-serif;
+    -fx-background-color: #f8f9fa;
+}
+
+
+.header-bar {
+    -fx-background-color: #0078ff;
+    -fx-padding: 15;
+    -fx-alignment: center-left;
+}
+
+.header-label {
+    -fx-text-fill: white;
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+}
+
+.page-pane {
+    -fx-background-color: white;
+    -fx-padding: 20;
+}
+
+/* ======= BUTTONS ======= */
+.button {
+    -fx-background-radius: 10;
+    -fx-cursor: hand;
+    -fx-font-weight: bold;
+    -fx-padding: 8 20 8 20;
+    -fx-border-radius: 10;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 2);
+}
+
+.button:hover {
+    -fx-opacity: 0.85;
+}
+
+/* Color variants */
+.btn-blue    {
+    -fx-background-color: #0078ff;
+    -fx-text-fill: white;
+}
+.btn-green   {
+    -fx-background-color: #28a745;
+    -fx-text-fill: white;
+}
+.btn-red     {
+    -fx-background-color: #dc3545;
+    -fx-text-fill: white;
+}
+.btn-gray    {
+    -fx-background-color: #6c757d;
+    -fx-text-fill: white;
+}
+
+/* ======= LABELS & HEADERS ======= */
+.label-header {
+    -fx-font-size: 22px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #0078ff;
+}
+
+.label-subheader {
+    -fx-font-size: 16px;
+    -fx-text-fill: #495057;
+}
+
+/* ======= TABLES ======= */
+.table-view {
+    -fx-background-radius: 10;
+    -fx-background-color: white;
+    -fx-border-color: #dee2e6;
+    -fx-border-radius: 10;
+    -fx-padding: 5;
+}
+
+.table-column {
+    -fx-alignment: CENTER;
+}
+
+.table-view .column-header {
+    -fx-background-color: #0078ff;
+    -fx-text-fill: white;
+}
+
+.table-row-cell:selected {
+    -fx-background-color: #cce5ff;
+    -fx-text-fill: black;
+}
+
+/* ======= FORM ELEMENTS ======= */
+.text-field {
+    -fx-background-radius: 8;
+    -fx-background-color: white;
+    -fx-border-color: #ced4da;
+    -fx-border-radius: 8;
+    -fx-padding: 6 10;
+}
+
+.text-field:focused {
+    -fx-border-color: #0078ff;
+    -fx-border-width: 2;
+}
+
+/* Adjusts default spacing for card layouts */
+.card {
+    -fx-spacing: 15;
+    -fx-padding: 20;
+    -fx-background-color: white;
+    -fx-background-radius: 15;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 4);
+}
+
+
+/* ======= LOGIN & REGISTER SCREENS ======= */
+.auth-pane {
+    -fx-background-color: linear-gradient(to bottom right, #4facfe, #00f2fe);
+}
+
+.auth-pane.register {
+    -fx-background-color: linear-gradient(to bottom right, #43e97b, #38f9d7);
+}
+
+.auth-box {
+    -fx-background-color: rgba(255, 255, 255, 0.9);
+    -fx-background-radius: 20;
+    -fx-padding: 30 25 30 25;
+    -fx-alignment: center;
+    -fx-spacing: 15;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 10, 0, 0, 4);
+}
+
+.auth-title {
+    -fx-font-size: 26px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #0078ff;
+}
+
+.text-input {
+    -fx-background-color: white;
+    -fx-border-color: #dee2e6;
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+    -fx-padding: 10;
+}
+
+.text-input:focused {
+    -fx-border-color: #0078ff;
+    -fx-border-width: 2;
+}
+
+.auth-button {
+    -fx-background-color: #0078ff;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 10;
+    -fx-padding: 10 30 10 30;
+    -fx-cursor: hand;
+}
+
+.auth-button:hover {
+    -fx-opacity: 0.9;
+}
+
+.auth-link {
+    -fx-text-fill: #0078ff;
+    -fx-font-weight: bold;
+    -fx-underline: true;
+}
+
+.auth-link:visited {
+    -fx-text-fill: #0078ff;
+}
