@@ -1,11 +1,14 @@
 package controllers;
 
-import main.Main;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import main.Main;
 import utils.DatabaseConnection;
+
 import java.sql.*;
-import javafx.event.ActionEvent;
+import javafx.scene.input.KeyCode;
+import javafx.scene.layout.AnchorPane;
+import utils.Session;
 
 public class LoginController {
 
@@ -13,49 +16,67 @@ public class LoginController {
     private TextField emailField;
     @FXML
     private PasswordField passwordField;
+    @FXML
+    private AnchorPane rootPane;
 
     @FXML
-    public void handleLogin() {
-        String email = emailField.getText();
-        String password = passwordField.getText();
+    public void initialize() {
+        rootPane.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.ENTER) {
+                handleLogin();
+            }
+        });
+    }
 
-        if (email.isEmpty() || password.isEmpty()) {
-            showAlert(Alert.AlertType.ERROR, "Please fill in both fields!");
+    @FXML
+    private void handleLogin() {
+
+        if (emailField.getText().isBlank() || passwordField.getText().isBlank()) {
+            showAlert(Alert.AlertType.ERROR, "All fields are required.");
             return;
         }
 
-        try (Connection conn = DatabaseConnection.getConnection()) {
-            String sql = "SELECT * FROM users WHERE email = ? AND password = ?";
-            PreparedStatement stmt = conn.prepareStatement(sql);
-            stmt.setString(1, email);
-            stmt.setString(2, password);
+        String sql = """
+            SELECT id, email, role
+            FROM users
+            WHERE email = ? AND password = ?
+        """;
+
+        try (Connection conn = DatabaseConnection.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, emailField.getText());
+            stmt.setString(2, passwordField.getText());
 
             ResultSet rs = stmt.executeQuery();
+
             if (rs.next()) {
-                String emailLogged = rs.getString("email");
-                showAlert(Alert.AlertType.INFORMATION, "Login Successful! Welcome, " + email);
-                // Set logged-in user and switch to dashboard
-                DashboardController.setLoggedInUser(emailLogged);
+                int userId = rs.getInt("id");
+                String email = rs.getString("email");
+                String role = rs.getString("role");
+
+                // 🔐 Store full session data
+                Session.setUser(userId, email, role);
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Login Successful");
+                alert.setHeaderText(null);
+                alert.setContentText("Welcome, " + email + "!");
+                alert.show();
                 Main.setRoot("dashboard.fxml");
             } else {
-                showAlert(Alert.AlertType.ERROR, "Invalid credentials!");
+                showAlert(Alert.AlertType.ERROR, "Invalid email or password.");
             }
+
         } catch (Exception e) {
-            showAlert(Alert.AlertType.ERROR, "Error: " + e.getMessage());
+            showAlert(Alert.AlertType.ERROR, e.getMessage());
         }
     }
 
     @FXML
-    public void switchToRegister(ActionEvent event) {
-        try {
-            Main.setRoot("register.fxml");
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-        }
+    private void switchToRegister() throws Exception {
+        Main.setRoot("register.fxml");
     }
 
-    private void showAlert(Alert.AlertType type, String message) {
-        Alert alert = new Alert(type, message, ButtonType.OK);
-        alert.showAndWait();
+    private void showAlert(Alert.AlertType type, String msg) {
+        new Alert(type, msg, ButtonType.OK).showAndWait();
     }
 }

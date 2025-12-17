@@ -6,22 +6,29 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane xmlns="http://javafx.com/javafx"
+<AnchorPane fx:id="rootPane"
+            xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="controllers.LoginController"
             prefWidth="400" prefHeight="500"
+            stylesheets="@/styles/auth.css"
             styleClass="auth-pane">
 
-    <VBox alignment="CENTER" layoutX="50" layoutY="100" prefWidth="300" styleClass="auth-box">
-        <Label text="POS System Login" styleClass="auth-title" />
+    <VBox alignment="CENTER" layoutX="50" layoutY="120" prefWidth="300"
+          styleClass="auth-box">
 
-        <TextField fx:id="emailField" promptText="Email" styleClass="text-input" />
-        <PasswordField fx:id="passwordField" promptText="Password" styleClass="text-input" />
+        <Label text="POS System Login" styleClass="auth-title"/>
 
-        <Button text="Login" onAction="#handleLogin" styleClass="auth-button" />
+        <TextField fx:id="emailField" promptText="Email" styleClass="text-input"/>
+        <PasswordField fx:id="passwordField" promptText="Password" styleClass="text-input"/>
+
+        <Button text="Login"
+        onAction="#handleLogin"
+        styleClass="auth-button"
+        defaultButton="true"/>
 
         <Hyperlink text="Don’t have an account? Register"
                    onAction="#switchToRegister"
-                   styleClass="auth-link" />
+                   styleClass="auth-link"/>
     </VBox>
 </AnchorPane>

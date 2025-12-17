@@ -1,0 +1,68 @@
+/* ======= BUTTONS ======= */
+.button {
+    -fx-background-radius: 10;
+    -fx-cursor: hand;
+    -fx-font-weight: bold;
+    -fx-padding: 8 20;
+    -fx-border-radius: 10;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 2);
+}
+
+.button:hover {
+    -fx-opacity: 0.85;
+}
+
+/* Color variants */
+.btn-blue  { -fx-background-color: #0078ff; -fx-text-fill: white; }
+.btn-green { -fx-background-color: #28a745; -fx-text-fill: white; }
+.btn-red   { -fx-background-color: #dc3545; -fx-text-fill: white; }
+.btn-gray  { -fx-background-color: #6c757d; -fx-text-fill: white; }
+
+/* ======= TABLES ======= */
+.table-view {
+    -fx-background-radius: 10;
+    -fx-background-color: white;
+    -fx-border-color: #dee2e6;
+    -fx-border-radius: 10;
+    -fx-padding: 5;
+}
+
+.table-column {
+    -fx-alignment: CENTER;
+}
+
+.table-view .column-header {
+    -fx-background-color: #0078ff;
+}
+
+.table-view .column-header .label {
+    -fx-text-fill: white;
+}
+
+.table-row-cell:selected {
+    -fx-background-color: #cce5ff;
+    -fx-text-fill: black;
+}
+
+/* ======= FORM ELEMENTS ======= */
+.text-field {
+    -fx-background-radius: 8;
+    -fx-background-color: white;
+    -fx-border-color: #ced4da;
+    -fx-border-radius: 8;
+    -fx-padding: 6 10;
+}
+
+.text-field:focused {
+    -fx-border-color: #0078ff;
+    -fx-border-width: 2;
+}
+
+/* ======= CARDS ======= */
+.card {
+    -fx-spacing: 15;
+    -fx-padding: 20;
+    -fx-background-color: white;
+    -fx-background-radius: 15;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 4);
+}

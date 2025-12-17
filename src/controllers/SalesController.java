@@ -4,58 +4,79 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.collections.*;
 import javafx.scene.control.cell.PropertyValueFactory;
-import utils.DatabaseConnection;
+
 import models.Product;
-import models.Sale;
+import models.CartItem;
+import utils.DatabaseConnection;
+import utils.Session;
+
 import java.sql.*;
 
 public class SalesController {
 
-    @FXML private TableView<Product> productTable;
-    @FXML private TableColumn<Product, Integer> colProdId;
-    @FXML private TableColumn<Product, String> colProdName;
-    @FXML private TableColumn<Product, Double> colProdPrice;
+    /* Product table */
+    @FXML
+    private TableView<Product> productTable;
+    @FXML
+    private TableColumn<Product, Integer> colProdId;
+    @FXML
+    private TableColumn<Product, String> colProdName;
+    @FXML
+    private TableColumn<Product, Double> colProdPrice;
 
-    @FXML private TableView<Sale> cartTable;
-    @FXML private TableColumn<Sale, String> colCartName;
-    @FXML private TableColumn<Sale, Integer> colCartQty;
-    @FXML private TableColumn<Sale, Double> colCartTotal;
+    /* Cart table */
+    @FXML
+    private TableView<CartItem> cartTable;
+    @FXML
+    private TableColumn<CartItem, String> colCartName;
+    @FXML
+    private TableColumn<CartItem, Integer> colCartQty;
+    @FXML
+    private TableColumn<CartItem, Double> colCartSubtotal;
 
-    @FXML private TextField quantityField;
-    @FXML private Label totalLabel;
+    @FXML
+    private TextField quantityField;
+    @FXML
+    private Label totalLabel;
 
-    private ObservableList<Product> productList = FXCollections.observableArrayList();
-    private ObservableList<Sale> cartList = FXCollections.observableArrayList();
+    private final ObservableList<Product> productList = FXCollections.observableArrayList();
+    private final ObservableList<CartItem> cartList = FXCollections.observableArrayList();
+
     private double totalAmount = 0;
 
     @FXML
     public void initialize() {
+
         colProdId.setCellValueFactory(new PropertyValueFactory<>("id"));
         colProdName.setCellValueFactory(new PropertyValueFactory<>("name"));
         colProdPrice.setCellValueFactory(new PropertyValueFactory<>("price"));
 
         colCartName.setCellValueFactory(new PropertyValueFactory<>("productName"));
         colCartQty.setCellValueFactory(new PropertyValueFactory<>("quantity"));
-        colCartTotal.setCellValueFactory(new PropertyValueFactory<>("total"));
+        colCartSubtotal.setCellValueFactory(new PropertyValueFactory<>("subtotal"));
 
         loadProducts();
+
         productTable.setItems(productList);
         cartTable.setItems(cartList);
     }
 
     private void loadProducts() {
         productList.clear();
-        try (Connection conn = DatabaseConnection.getConnection()) {
-            String sql = "SELECT * FROM products WHERE stock > 0";
-            ResultSet rs = conn.createStatement().executeQuery(sql);
+
+        String sql = "SELECT id, name, price, stock FROM products WHERE stock > 0 AND is_active = 1";
+
+        try (Connection conn = DatabaseConnection.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql); ResultSet rs = stmt.executeQuery()) {
+
             while (rs.next()) {
                 productList.add(new Product(
-                    rs.getInt("id"),
-                    rs.getString("name"),
-                    rs.getDouble("price"),
-                    rs.getInt("stock")
+                        rs.getInt("id"),
+                        rs.getString("name"),
+                        rs.getDouble("price"),
+                        rs.getInt("stock")
                 ));
             }
+
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -63,82 +84,127 @@ public class SalesController {
 
     @FXML
     private void handleAddToCart() {
+
         Product selected = productTable.getSelectionModel().getSelectedItem();
         if (selected == null) {
-            showAlert(Alert.AlertType.WARNING, "Please select a product.");
+            showAlert(Alert.AlertType.WARNING, "Select a product.");
             return;
         }
 
         int qty;
         try {
             qty = Integer.parseInt(quantityField.getText());
-            if (qty <= 0) throw new NumberFormatException();
+            if (qty <= 0 || qty > selected.getStock()) {
+                throw new NumberFormatException();
+            }
         } catch (NumberFormatException e) {
             showAlert(Alert.AlertType.ERROR, "Invalid quantity.");
             return;
         }
 
-        double total = selected.getPrice() * qty;
-        totalAmount += total;
+        CartItem item = new CartItem(
+                selected.getId(),
+                selected.getName(),
+                qty,
+                selected.getPrice()
+        );
 
-        cartList.add(new Sale(0, selected.getId(), selected.getName(), qty, total));
-        updateTotalLabel();
+        cartList.add(item);
+        totalAmount += item.getSubtotal();
+        updateTotal();
+
         quantityField.clear();
     }
 
     @FXML
     private void handleRemove() {
-        Sale selected = cartTable.getSelectionModel().getSelectedItem();
-        if (selected != null) {
-            totalAmount -= selected.getTotal();
-            cartList.remove(selected);
-            updateTotalLabel();
+
+        CartItem selected = cartTable.getSelectionModel().getSelectedItem();
+        if (selected == null) {
+            return;
         }
+
+        totalAmount -= selected.getSubtotal();
+        cartList.remove(selected);
+        updateTotal();
     }
 
     @FXML
     private void handleCheckout() {
+
         if (cartList.isEmpty()) {
-            showAlert(Alert.AlertType.WARNING, "Cart is empty!");
+            showAlert(Alert.AlertType.WARNING, "Cart is empty.");
             return;
         }
 
+        String insertSale
+                = "INSERT INTO sales (user_id, total_amount) VALUES (?, ?)";
+
+        String insertItem
+                = "INSERT INTO sale_items (sale_id, product_id, quantity, price, subtotal) "
+                + "VALUES (?, ?, ?, ?, ?)";
+
+        String updateStock
+                = "UPDATE products SET stock = stock - ? WHERE id = ?";
+
         try (Connection conn = DatabaseConnection.getConnection()) {
-            String sql = "INSERT INTO sales (product_id, quantity, total) VALUES (?, ?, ?)";
-            PreparedStatement stmt = conn.prepareStatement(sql);
 
-            for (Sale s : cartList) {
-                stmt.setInt(1, s.getProductId());
-                stmt.setInt(2, s.getQuantity());
-                stmt.setDouble(3, s.getTotal());
-                stmt.addBatch();
+            conn.setAutoCommit(false);
 
-                // Deduct stock
-                PreparedStatement updateStock = conn.prepareStatement(
-                    "UPDATE products SET stock = stock - ? WHERE id = ?");
-                updateStock.setInt(1, s.getQuantity());
-                updateStock.setInt(2, s.getProductId());
-                updateStock.executeUpdate();
+            // 1️⃣ Create sale
+            PreparedStatement saleStmt
+                    = conn.prepareStatement(insertSale, Statement.RETURN_GENERATED_KEYS);
+            saleStmt.setInt(1, Session.getUserId());
+            saleStmt.setDouble(2, totalAmount);
+            saleStmt.executeUpdate();
+
+            ResultSet keys = saleStmt.getGeneratedKeys();
+            if (!keys.next()) {
+                throw new SQLException("Failed to create sale.");
             }
-            stmt.executeBatch();
+            int saleId = keys.getInt(1);
+
+            // 2️⃣ Insert sale items + deduct stock
+            PreparedStatement itemStmt = conn.prepareStatement(insertItem);
+            PreparedStatement stockStmt = conn.prepareStatement(updateStock);
+
+            for (CartItem item : cartList) {
+
+                itemStmt.setInt(1, saleId);
+                itemStmt.setInt(2, item.getProductId());
+                itemStmt.setInt(3, item.getQuantity());
+                itemStmt.setDouble(4, item.getPrice());
+                itemStmt.setDouble(5, item.getSubtotal());
+                itemStmt.addBatch();
+
+                stockStmt.setInt(1, item.getQuantity());
+                stockStmt.setInt(2, item.getProductId());
+                stockStmt.addBatch();
+            }
+
+            itemStmt.executeBatch();
+            stockStmt.executeBatch();
+
+            conn.commit();
 
             showAlert(Alert.AlertType.INFORMATION, "Checkout successful!");
+
             cartList.clear();
             totalAmount = 0;
-            updateTotalLabel();
+            updateTotal();
             loadProducts();
+
         } catch (Exception e) {
             e.printStackTrace();
             showAlert(Alert.AlertType.ERROR, e.getMessage());
         }
     }
 
-    private void updateTotalLabel() {
+    private void updateTotal() {
         totalLabel.setText(String.format("%.2f", totalAmount));
     }
 
-    private void showAlert(Alert.AlertType type, String message) {
-        Alert alert = new Alert(type, message, ButtonType.OK);
-        alert.showAndWait();
+    private void showAlert(Alert.AlertType type, String msg) {
+        new Alert(type, msg, ButtonType.OK).showAndWait();
     }
 }

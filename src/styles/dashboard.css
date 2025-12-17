@@ -1,0 +1,20 @@
+/* Dashboard layout only – no components */
+
+.header-bar {
+    -fx-background-color: #0078ff;
+    -fx-padding: 15;
+}
+
+.header-label {
+    -fx-text-fill: white;
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+}
+.sidebar {
+    -fx-background-color: #f8fafc;
+    -fx-padding: 20;
+    -fx-spacing: 12;
+
+    /* 🔥 THIS fixes the spacing issue */
+    -fx-pref-width: 180;
+}

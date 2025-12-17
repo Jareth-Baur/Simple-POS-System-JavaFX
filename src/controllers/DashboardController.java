@@ -5,39 +5,36 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.control.*;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.Pane;
-import java.io.IOException;
 import main.Main;
+import utils.Session;
+
+import java.io.IOException;
 
 public class DashboardController {
 
-    @FXML
-    private Label welcomeLabel;
-    @FXML
-    private Label placeholderLabel;
-    @FXML
-    private Button btnProducts;
-    @FXML
-    private Button btnSales;
-    @FXML
-    private Button btnReports;
-    @FXML
-    private Button btnLogout;
-    @FXML
-    private StackPane contentArea;
+    @FXML private Label welcomeLabel;
+    @FXML private Label placeholderLabel;
 
-    private static String loggedInUser;
+    @FXML private Button btnProducts;
+    @FXML private Button btnSales;
+    @FXML private Button btnReports;
+    @FXML private Button btnLogout;
 
-    public static void setLoggedInUser(String email) {
-        loggedInUser = email;
-    }
+    @FXML private StackPane contentArea;
 
     @FXML
     public void initialize() {
-        if (loggedInUser != null) {
-            welcomeLabel.setText("Welcome, " + loggedInUser);
+        // Show logged-in user
+        if (Session.getEmail() != null) {
+            welcomeLabel.setText("Welcome, " + Session.getEmail());
         }
-        // Show placeholder at startup
+
         placeholderLabel.setVisible(true);
+
+        // Role-based access (DB-driven)
+        if (!"admin".equals(Session.getRole())) {
+            btnReports.setDisable(true);
+        }
     }
 
     @FXML
@@ -47,11 +44,12 @@ public class DashboardController {
         alert.setHeaderText("Are you sure you want to log out?");
         alert.setContentText("Your current session will be closed.");
 
-        if (alert.showAndWait().get() == ButtonType.OK) {
+        if (alert.showAndWait().orElse(ButtonType.CANCEL) == ButtonType.OK) {
+            Session.clear(); // IMPORTANT
             try {
                 Main.setRoot("login.fxml");
             } catch (Exception e) {
-                System.out.println(e.getMessage());
+                e.printStackTrace();
             }
         }
     }
@@ -73,11 +71,12 @@ public class DashboardController {
 
     private void loadPage(String fxml) {
         try {
-            Pane newLoadedPane = FXMLLoader.load(getClass().getResource("/views/" + fxml));
-            contentArea.getChildren().clear();
-            contentArea.getChildren().add(newLoadedPane);
+            Pane page = FXMLLoader.load(
+                    getClass().getResource("/views/" + fxml)
+            );
+            contentArea.getChildren().setAll(page);
         } catch (IOException e) {
-            System.out.println(e.getMessage());
+            e.printStackTrace();
         }
     }
 }

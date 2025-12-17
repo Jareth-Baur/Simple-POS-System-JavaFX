@@ -5,62 +5,106 @@ import javafx.scene.control.*;
 import javafx.collections.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import utils.DatabaseConnection;
+import utils.Session;
 import models.Product;
+
 import java.sql.*;
 
 public class ProductsController {
 
-    @FXML
-    private TableView<Product> productTable;
-    @FXML
-    private TableColumn<Product, Integer> colId;
-    @FXML
-    private TableColumn<Product, String> colName;
-    @FXML
-    private TableColumn<Product, Double> colPrice;
-    @FXML
-    private TableColumn<Product, Integer> colStock;
-    @FXML
-    private TextField nameField;
-    @FXML
-    private TextField priceField;
-    @FXML
-    private TextField stockField;
+    /* TABLE */
+    @FXML private TableView<Product> productTable;
+    @FXML private TableColumn<Product, Integer> colId;
+    @FXML private TableColumn<Product, String> colName;
+    @FXML private TableColumn<Product, String> colCategory;
+    @FXML private TableColumn<Product, String> colSku;
+    @FXML private TableColumn<Product, String> colBarcode;
+    @FXML private TableColumn<Product, Double> colCost;
+    @FXML private TableColumn<Product, Double> colPrice;
+    @FXML private TableColumn<Product, Integer> colStock;
 
-    private ObservableList<Product> productList = FXCollections.observableArrayList();
+    /* FORM */
+    @FXML private TextField nameField;
+    @FXML private TextField skuField;
+    @FXML private TextField barcodeField;
+    @FXML private TextField costField;
+    @FXML private TextField priceField;
+    @FXML private TextField stockField;
+    @FXML private ComboBox<String> categoryBox;
+
+    private final ObservableList<Product> productList = FXCollections.observableArrayList();
+    private final ObservableList<String> categoryList = FXCollections.observableArrayList();
 
     @FXML
     public void initialize() {
+
         colId.setCellValueFactory(new PropertyValueFactory<>("id"));
         colName.setCellValueFactory(new PropertyValueFactory<>("name"));
+        colCategory.setCellValueFactory(new PropertyValueFactory<>("category"));
+        colSku.setCellValueFactory(new PropertyValueFactory<>("sku"));
+        colBarcode.setCellValueFactory(new PropertyValueFactory<>("barcode"));
+        colCost.setCellValueFactory(new PropertyValueFactory<>("cost"));
         colPrice.setCellValueFactory(new PropertyValueFactory<>("price"));
         colStock.setCellValueFactory(new PropertyValueFactory<>("stock"));
 
+        loadCategories();
         loadProducts();
 
         productTable.setItems(productList);
+        categoryBox.setItems(categoryList);
 
         productTable.setOnMouseClicked(e -> {
             Product p = productTable.getSelectionModel().getSelectedItem();
             if (p != null) {
                 nameField.setText(p.getName());
+                skuField.setText(p.getSku());
+                barcodeField.setText(p.getBarcode());
+                costField.setText(String.valueOf(p.getCost()));
                 priceField.setText(String.valueOf(p.getPrice()));
                 stockField.setText(String.valueOf(p.getStock()));
+                categoryBox.setValue(p.getCategory());
             }
         });
+
+        if (!"admin".equals(Session.getRole())) {
+            disableCrud();
+        }
+    }
+
+    private void loadCategories() {
+        categoryList.clear();
+        try (Connection conn = DatabaseConnection.getConnection();
+             ResultSet rs = conn.createStatement()
+                     .executeQuery("SELECT name FROM categories ORDER BY name")) {
+            while (rs.next()) categoryList.add(rs.getString("name"));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void loadProducts() {
         productList.clear();
-        try (Connection conn = DatabaseConnection.getConnection()) {
-            String sql = "SELECT * FROM products";
-            Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery(sql);
+
+        String sql = """
+            SELECT p.id, p.name, p.sku, p.barcode, p.cost, p.price, p.stock,
+                   c.name AS category
+            FROM products p
+            LEFT JOIN categories c ON p.category_id = c.id
+            WHERE p.is_active = 1
+        """;
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
 
             while (rs.next()) {
                 productList.add(new Product(
                         rs.getInt("id"),
                         rs.getString("name"),
+                        rs.getString("category"),
+                        rs.getString("sku"),
+                        rs.getString("barcode"),
+                        rs.getDouble("cost"),
                         rs.getDouble("price"),
                         rs.getInt("stock")
                 ));
@@ -72,26 +116,44 @@ public class ProductsController {
 
     @FXML
     private void handleAdd() {
-        String name = nameField.getText();
-        String price = priceField.getText();
-        String stock = stockField.getText();
 
-        if (name.isEmpty() || price.isEmpty() || stock.isEmpty()) {
+        if (!"admin".equals(Session.getRole())) return;
+
+        if (nameField.getText().isBlank()
+                || skuField.getText().isBlank()
+                || barcodeField.getText().isBlank()
+                || costField.getText().isBlank()
+                || priceField.getText().isBlank()
+                || stockField.getText().isBlank()
+                || categoryBox.getValue() == null) {
+
             showAlert(Alert.AlertType.ERROR, "Please fill in all fields.");
             return;
         }
 
-        try (Connection conn = DatabaseConnection.getConnection()) {
-            String sql = "INSERT INTO products (name, price, stock) VALUES (?, ?, ?)";
-            PreparedStatement stmt = conn.prepareStatement(sql);
-            stmt.setString(1, name);
-            stmt.setDouble(2, Double.parseDouble(price));
-            stmt.setInt(3, Integer.parseInt(stock));
-            stmt.executeUpdate();
+        String sql = """
+            INSERT INTO products
+            (name, sku, barcode, cost, price, stock, category_id)
+            VALUES (?, ?, ?, ?, ?, ?, (SELECT id FROM categories WHERE name = ?))
+        """;
 
-            showAlert(Alert.AlertType.INFORMATION, "Product added successfully!");
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, nameField.getText());
+            stmt.setString(2, skuField.getText());
+            stmt.setString(3, barcodeField.getText());
+            stmt.setDouble(4, Double.parseDouble(costField.getText()));
+            stmt.setDouble(5, Double.parseDouble(priceField.getText()));
+            stmt.setInt(6, Integer.parseInt(stockField.getText()));
+            stmt.setString(7, categoryBox.getValue());
+
+            stmt.executeUpdate();
             loadProducts();
             handleClear();
+
+        } catch (SQLIntegrityConstraintViolationException e) {
+            showAlert(Alert.AlertType.ERROR, "SKU or Barcode already exists.");
         } catch (Exception e) {
             showAlert(Alert.AlertType.ERROR, e.getMessage());
         }
@@ -99,24 +161,35 @@ public class ProductsController {
 
     @FXML
     private void handleUpdate() {
-        Product selected = productTable.getSelectionModel().getSelectedItem();
-        if (selected == null) {
-            showAlert(Alert.AlertType.WARNING, "Please select a product to update.");
-            return;
-        }
 
-        try (Connection conn = DatabaseConnection.getConnection()) {
-            String sql = "UPDATE products SET name=?, price=?, stock=? WHERE id=?";
-            PreparedStatement stmt = conn.prepareStatement(sql);
+        if (!"admin".equals(Session.getRole())) return;
+
+        Product p = productTable.getSelectionModel().getSelectedItem();
+        if (p == null) return;
+
+        String sql = """
+            UPDATE products SET
+                name=?, sku=?, barcode=?, cost=?, price=?, stock=?,
+                category_id=(SELECT id FROM categories WHERE name=?)
+            WHERE id=?
+        """;
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
             stmt.setString(1, nameField.getText());
-            stmt.setDouble(2, Double.parseDouble(priceField.getText()));
-            stmt.setInt(3, Integer.parseInt(stockField.getText()));
-            stmt.setInt(4, selected.getId());
-            stmt.executeUpdate();
+            stmt.setString(2, skuField.getText());
+            stmt.setString(3, barcodeField.getText());
+            stmt.setDouble(4, Double.parseDouble(costField.getText()));
+            stmt.setDouble(5, Double.parseDouble(priceField.getText()));
+            stmt.setInt(6, Integer.parseInt(stockField.getText()));
+            stmt.setString(7, categoryBox.getValue());
+            stmt.setInt(8, p.getId());
 
-            showAlert(Alert.AlertType.INFORMATION, "Product updated successfully!");
+            stmt.executeUpdate();
             loadProducts();
             handleClear();
+
         } catch (Exception e) {
             showAlert(Alert.AlertType.ERROR, e.getMessage());
         }
@@ -124,29 +197,21 @@ public class ProductsController {
 
     @FXML
     private void handleDelete() {
-        Product selected = productTable.getSelectionModel().getSelectedItem();
-        if (selected == null) {
-            showAlert(Alert.AlertType.WARNING, "Please select a product to delete.");
-            return;
-        }
 
-        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
-        confirm.setTitle("Delete Confirmation");
-        confirm.setHeaderText("Are you sure you want to delete this product?");
-        confirm.setContentText(selected.getName());
-        if (confirm.showAndWait().get() != ButtonType.OK) {
-            return;
-        }
+        if (!"admin".equals(Session.getRole())) return;
 
-        try (Connection conn = DatabaseConnection.getConnection()) {
-            String sql = "DELETE FROM products WHERE id=?";
-            PreparedStatement stmt = conn.prepareStatement(sql);
-            stmt.setInt(1, selected.getId());
+        Product p = productTable.getSelectionModel().getSelectedItem();
+        if (p == null) return;
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt =
+                     conn.prepareStatement("UPDATE products SET is_active=0 WHERE id=?")) {
+
+            stmt.setInt(1, p.getId());
             stmt.executeUpdate();
-
-            showAlert(Alert.AlertType.INFORMATION, "Product deleted successfully!");
             loadProducts();
             handleClear();
+
         } catch (Exception e) {
             showAlert(Alert.AlertType.ERROR, e.getMessage());
         }
@@ -155,13 +220,26 @@ public class ProductsController {
     @FXML
     private void handleClear() {
         nameField.clear();
+        skuField.clear();
+        barcodeField.clear();
+        costField.clear();
         priceField.clear();
         stockField.clear();
+        categoryBox.setValue(null);
         productTable.getSelectionModel().clearSelection();
     }
 
-    private void showAlert(Alert.AlertType type, String message) {
-        Alert alert = new Alert(type, message, ButtonType.OK);
-        alert.showAndWait();
+    private void disableCrud() {
+        nameField.setDisable(true);
+        skuField.setDisable(true);
+        barcodeField.setDisable(true);
+        costField.setDisable(true);
+        priceField.setDisable(true);
+        stockField.setDisable(true);
+        categoryBox.setDisable(true);
+    }
+
+    private void showAlert(Alert.AlertType type, String msg) {
+        new Alert(type, msg, ButtonType.OK).showAndWait();
     }
 }

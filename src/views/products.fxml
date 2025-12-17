@@ -1,43 +1,54 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
 <AnchorPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="controllers.ProductsController"
-            prefWidth="700" prefHeight="600"
+            prefWidth="900" prefHeight="650"
             styleClass="page-pane">
 
-    <VBox alignment="TOP_CENTER" spacing="20" prefWidth="780" layoutX="10" layoutY="10"
-          styleClass="card">
-        <Label text="🛍 Product Management" styleClass="label-header" />
+    <VBox spacing="20" alignment="TOP_CENTER" styleClass="card">
 
-        <TableView fx:id="productTable" prefHeight="300">
+        <Label text="🛍 Product Management" styleClass="label-header"/>
+
+        <!-- TABLE -->
+        <TableView fx:id="productTable" prefHeight="320">
             <columns>
-                <TableColumn fx:id="colId" text="ID" prefWidth="50" />
-                <TableColumn fx:id="colName" text="Name" prefWidth="200" />
-                <TableColumn fx:id="colPrice" text="Price" prefWidth="100" />
-                <TableColumn fx:id="colStock" text="Stock" prefWidth="100" />
+                <TableColumn fx:id="colId" text="ID" prefWidth="50"/>
+                <TableColumn fx:id="colName" text="Name" prefWidth="180"/>
+                <TableColumn fx:id="colCategory" text="Category" prefWidth="140"/>
+                <TableColumn fx:id="colSku" text="SKU" prefWidth="120"/>
+                <TableColumn fx:id="colBarcode" text="Barcode" prefWidth="140"/>
+                <TableColumn fx:id="colCost" text="Cost" prefWidth="90"/>
+                <TableColumn fx:id="colPrice" text="Price" prefWidth="90"/>
+                <TableColumn fx:id="colStock" text="Stock" prefWidth="80"/>
             </columns>
         </TableView>
 
+        <!-- FORM ROW 1 -->
         <HBox spacing="15">
-            <TextField fx:id="nameField" promptText="Product Name" prefWidth="220" />
-            <TextField fx:id="priceField" promptText="Price" prefWidth="120" />
-            <TextField fx:id="stockField" promptText="Stock" prefWidth="120" />
+            <TextField fx:id="nameField" promptText="Product Name"/>
+            <ComboBox fx:id="categoryBox" promptText="Category"/>
+            <TextField fx:id="skuField" promptText="SKU"/>
+            <TextField fx:id="barcodeField" promptText="Barcode"/>
         </HBox>
 
+        <!-- FORM ROW 2 -->
         <HBox spacing="15">
-            <Button text="Add" onAction="#handleAdd" styleClass="btn-green" />
-            <Button text="Update" onAction="#handleUpdate" styleClass="btn-blue" />
-            <Button text="Delete" onAction="#handleDelete" styleClass="btn-red" />
-            <Button text="Clear" onAction="#handleClear" styleClass="btn-gray" />
-
+            <TextField fx:id="costField" promptText="Cost"/>
+            <TextField fx:id="priceField" promptText="Price"/>
+            <TextField fx:id="stockField" promptText="Stock"/>
         </HBox>
+
+        <!-- ACTIONS -->
+        <HBox spacing="15">
+            <Button text="Add" onAction="#handleAdd" styleClass="btn-green"/>
+            <Button text="Update" onAction="#handleUpdate" styleClass="btn-blue"/>
+            <Button text="Delete" onAction="#handleDelete" styleClass="btn-red"/>
+            <Button text="Clear" onAction="#handleClear" styleClass="btn-gray"/>
+        </HBox>
+
     </VBox>
-
 </AnchorPane>

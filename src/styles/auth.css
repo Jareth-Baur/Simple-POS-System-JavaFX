@@ -1,0 +1,59 @@
+/* ======= AUTH SCREENS ======= */
+.auth-pane {
+    -fx-background-color: linear-gradient(to bottom right, #4facfe, #00f2fe);
+}
+
+.auth-pane.register {
+    -fx-background-color: linear-gradient(to bottom right, #43e97b, #38f9d7);
+}
+
+.auth-box {
+    -fx-background-color: rgba(255, 255, 255, 0.9);
+    -fx-background-radius: 20;
+    -fx-padding: 30 25;
+    -fx-alignment: center;
+    -fx-spacing: 15;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 10, 0, 0, 4);
+}
+
+.auth-title {
+    -fx-font-size: 26px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #0078ff;
+}
+
+.text-input {
+    -fx-background-color: white;
+    -fx-border-color: #dee2e6;
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+    -fx-padding: 10;
+}
+
+.text-input:focused {
+    -fx-border-color: #0078ff;
+    -fx-border-width: 2;
+}
+
+.auth-button {
+    -fx-background-color: #0078ff;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 10;
+    -fx-padding: 10 30;
+    -fx-cursor: hand;
+}
+
+.auth-button:hover {
+    -fx-opacity: 0.9;
+}
+
+.auth-link {
+    -fx-text-fill: #0078ff;
+    -fx-font-weight: bold;
+    -fx-underline: true;
+}
+
+.auth-link:visited {
+    -fx-text-fill: #0078ff;
+}
