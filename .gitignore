@@ -81,3 +81,7 @@ desktop.ini
 *.msi
 *.dmg
 *.pkg
+
+# NetBeans private files (DO NOT COMMIT)
+nbproject/private/
+
