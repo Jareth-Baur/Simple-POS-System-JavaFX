@@ -1,1 +1,83 @@
-"# NetBeans and JavaFXnbproject/private/build/dist/*.class*.jar*.zip*.log*.imlout/.DS_Store" 
+# =========================
+# Java / JavaFX
+# =========================
+*.class
+*.jar
+*.war
+*.ear
+hs_err_pid*
+
+# =========================
+# Build outputs
+# =========================
+/build/
+/dist/
+/out/
+/target/
+
+# =========================
+# Zulu JDK FX (DO NOT COMMIT JDK)
+# =========================
+/zulu*/
+/jdk*/
+/javafx-sdk*/
+/javafx/
+
+# =========================
+# NetBeans
+# =========================
+/nbproject/private/
+/nbbuild/
+/nbdist/
+/.nb-gradle/
+
+# =========================
+# IntelliJ IDEA
+# =========================
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# =========================
+# Eclipse
+# =========================
+.project
+.classpath
+.settings/
+
+# =========================
+# OS / System files
+# =========================
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# =========================
+# Logs & temp files
+# =========================
+*.log
+*.tmp
+*.swp
+
+# =========================
+# Environment / Secrets
+# =========================
+.env
+*.keystore
+*.jks
+
+# =========================
+# POS exports / reports
+# =========================
+*.pdf
+*.csv
+
+# =========================
+# JavaFX native build artifacts
+# =========================
+*.jlink
+*.exe
+*.msi
+*.dmg
+*.pkg
