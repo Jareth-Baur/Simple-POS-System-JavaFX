@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import java.lang.*?>
+<?import java.net.*?>
+<?import java.util.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="controllers.ProductsMainController"
+            styleClass="page-pane">
+    <stylesheets>
+        <URL value="@/styles/base.css"/>
+        <URL value="@/styles/components.css"/>
+    </stylesheets>
+    <!-- Top navigation -->
+    <top>
+        <HBox fx:id="subNav" spacing="10" styleClass="sub-nav">
+
+            <Button fx:id="btnCategories" text="Categories" onAction="#openCategories"/>
+            <Button fx:id="btnSuppliers"  text="Suppliers"  onAction="#openSuppliers"/>
+            <Button fx:id="btnProducts"   text="Products"   onAction="#openProducts"/>
+            <Button fx:id="btnVariants"   text="Variants"   onAction="#openVariants"/>
+            <Button fx:id="btnModifiers"  text="Modifiers"  onAction="#openModifiers"/>
+            <Button fx:id="btnBundles"    text="Bundles"    onAction="#openBundles"/>
+        </HBox>
+    </top>
+
+    <!-- Content area -->
+    <center>
+        <StackPane fx:id="contentArea"/>
+    </center>
+
+</BorderPane>

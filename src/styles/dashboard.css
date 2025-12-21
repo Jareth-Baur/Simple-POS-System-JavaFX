@@ -18,3 +18,21 @@
     /* 🔥 THIS fixes the spacing issue */
     -fx-pref-width: 180;
 }
+
+/* ======= MAIN SIDEBAR NAV ======= */
+.sidebar .button {
+    -fx-text-fill: #2b2b2b; /* dark text */
+    -fx-font-weight: bold;
+    -fx-alignment: CENTER_LEFT;
+    -fx-padding: 10 16;
+    -fx-background-radius: 8;
+    -fx-max-width: Infinity;   /* 🔥 REQUIRED */
+    /* 🔥 equal width */
+    -fx-pref-width: 100%;
+}
+
+/* ACTIVE NAV ITEM */
+.sidebar .button.active {
+    -fx-background-color: #0078ff;
+    -fx-text-fill: white;
+}

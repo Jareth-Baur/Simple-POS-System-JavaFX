@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="controllers.CategoriesController"
+            prefWidth="900" prefHeight="650"
+            styleClass="page-pane">
+
+    <VBox spacing="15" alignment="TOP_CENTER" styleClass="card">
+
+        <Label text="Category Management" styleClass="label-header" />
+
+        <TableView fx:id="table">
+            <columns>
+                <TableColumn fx:id="colId" text="ID" prefWidth="80"/>
+                <TableColumn fx:id="colName" text="Name" prefWidth="200"/>
+            </columns>
+        </TableView>
+
+        <TextField fx:id="nameField" promptText="Category Name"/>
+
+        <HBox spacing="10">
+            <Button text="Add" onAction="#handleAdd" styleClass="btn-green"/>
+            <Button text="Update" onAction="#handleUpdate" styleClass="btn-blue"/>
+            <Button text="Delete" onAction="#handleDelete" styleClass="btn-red"/>
+            <Button text="Clear" onAction="#handleClear" styleClass="btn-gray"/>
+        </HBox>
+
+    </VBox>
+</AnchorPane>

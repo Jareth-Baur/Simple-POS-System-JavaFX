@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="controllers.BundlesController"
+            prefWidth="900" prefHeight="650"
+            styleClass="page-pane">
+
+    <VBox spacing="15" alignment="TOP_CENTER" styleClass="card">
+
+        <Label text="📦 Product Bundles" styleClass="label-header"/>
+
+        <!-- TABLE -->
+        <TableView fx:id="table" prefHeight="300">
+            <columns>
+                <TableColumn fx:id="colId" text="ID" prefWidth="60"/>
+                <TableColumn fx:id="colBundle" text="Bundle Product" prefWidth="240"/>
+                <TableColumn fx:id="colItem" text="Item Product" prefWidth="240"/>
+                <TableColumn fx:id="colQty" text="Qty" prefWidth="80"/>
+            </columns>
+        </TableView>
+
+        <!-- FORM -->
+        <HBox spacing="10">
+            <ComboBox fx:id="bundleBox" promptText="Bundle Product"  styleClass="form-combo"/>
+            <ComboBox fx:id="itemBox" promptText="Item Product"  styleClass="form-combo"/>
+            <TextField fx:id="qtyField" promptText="Quantity"  styleClass="form-combo"/>
+        </HBox>
+
+        <!-- ACTIONS -->
+        <HBox spacing="10">
+            <Button text="Add" onAction="#handleAdd" styleClass="btn-green"/>
+            <Button text="Delete" onAction="#handleDelete" styleClass="btn-red"/>
+            <Button text="Clear" onAction="#handleClear" styleClass="btn-gray"/>
+        </HBox>
+
+    </VBox>
+</AnchorPane>

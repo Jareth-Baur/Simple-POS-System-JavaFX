@@ -2,36 +2,30 @@ package controllers;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import main.Main;
-import utils.DatabaseConnection;
-
-import java.sql.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.AnchorPane;
+import main.Main;
+import utils.DatabaseConnection;
 import utils.Session;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class LoginController {
 
-    @FXML
-    private TextField emailField;
-    @FXML
-    private PasswordField passwordField;
-    @FXML
-    private AnchorPane rootPane;
-
-    @FXML
-    public void initialize() {
-        rootPane.setOnKeyPressed(event -> {
-            if (event.getCode() == KeyCode.ENTER) {
-                handleLogin();
-            }
-        });
-    }
+    @FXML private TextField emailField;
+    @FXML private PasswordField passwordField;
+    @FXML private AnchorPane rootPane;
 
     @FXML
     private void handleLogin() {
 
-        if (emailField.getText().isBlank() || passwordField.getText().isBlank()) {
+        String email = emailField.getText().trim();
+        String password = passwordField.getText().trim();
+
+        if (email.isEmpty() || password.isEmpty()) {
             showAlert(Alert.AlertType.ERROR, "All fields are required.");
             return;
         }
@@ -42,32 +36,40 @@ public class LoginController {
             WHERE email = ? AND password = ?
         """;
 
-        try (Connection conn = DatabaseConnection.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
 
-            stmt.setString(1, emailField.getText());
-            stmt.setString(2, passwordField.getText());
+            ps.setString(1, email);
+            ps.setString(2, password);
 
-            ResultSet rs = stmt.executeQuery();
+            ResultSet rs = ps.executeQuery();
 
-            if (rs.next()) {
-                int userId = rs.getInt("id");
-                String email = rs.getString("email");
-                String role = rs.getString("role");
-
-                // 🔐 Store full session data
-                Session.setUser(userId, email, role);
-                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                alert.setTitle("Login Successful");
-                alert.setHeaderText(null);
-                alert.setContentText("Welcome, " + email + "!");
-                alert.show();
-                Main.setRoot("dashboard.fxml");
-            } else {
+            if (!rs.next()) {
                 showAlert(Alert.AlertType.ERROR, "Invalid email or password.");
+                return;
             }
 
+            int userId = rs.getInt("id");
+            String role = rs.getString("role");
+
+            // Store session (Lab #3 requirement)
+            Session.setUser(userId, email, role);
+
+            showAlert(Alert.AlertType.INFORMATION, "Login successful!");
+
+            // Role-based redirect (PDF requirement)
+            if ("cashier".equalsIgnoreCase(role)) {
+                Main.setRoot("dashboard.fxml");
+            } else {
+                Main.setRoot("dashboard.fxml");
+            }
+
+        } catch (SQLException e) {
+            showAlert(Alert.AlertType.ERROR, "Database error. Please try again.");
+            e.printStackTrace();
         } catch (Exception e) {
-            showAlert(Alert.AlertType.ERROR, e.getMessage());
+            showAlert(Alert.AlertType.ERROR, "Unexpected error occurred.");
+            e.printStackTrace();
         }
     }
 
@@ -76,7 +78,10 @@ public class LoginController {
         Main.setRoot("register.fxml");
     }
 
-    private void showAlert(Alert.AlertType type, String msg) {
-        new Alert(type, msg, ButtonType.OK).showAndWait();
+    private void showAlert(Alert.AlertType type, String message) {
+        Alert alert = new Alert(type);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
     }
 }

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="controllers.ModifiersController"
+            prefWidth="900" prefHeight="650"
+            styleClass="page-pane">
+
+    <VBox spacing="15" alignment="TOP_CENTER" styleClass="card">
+
+        <Label text="🧩 Product Modifiers" styleClass="label-header"/>
+
+        <TableView fx:id="table" prefHeight="300">
+            <columns>
+                <TableColumn fx:id="colId" text="ID" prefWidth="60"/>
+                <TableColumn fx:id="colProduct" text="Product" prefWidth="220"/>
+                <TableColumn fx:id="colName" text="Modifier" prefWidth="200"/>
+                <TableColumn fx:id="colType" text="Type" prefWidth="120"/>
+                <TableColumn fx:id="colRequired" text="Required" prefWidth="90"/>
+            </columns>
+        </TableView>
+
+        <HBox spacing="10">
+            <ComboBox fx:id="productBox" promptText="Product" styleClass="form-combo"/>
+            <TextField fx:id="nameField" promptText="Modifier Name"/>
+            <ComboBox fx:id="typeBox" promptText="Type" styleClass="form-combo"/>
+            <CheckBox fx:id="requiredBox" text="Required"/>
+        </HBox>
+
+        <HBox spacing="10">
+            <Button text="Add" onAction="#handleAdd" styleClass="btn-green"/>
+            <Button text="Update" onAction="#handleUpdate" styleClass="btn-blue"/>
+            <Button text="Delete" onAction="#handleDelete" styleClass="btn-red"/>
+            <Button text="Clear" onAction="#handleClear" styleClass="btn-gray"/>
+            <Button text="Manage Options" onAction="#openOptions" styleClass="btn-gray"/>
+        </HBox>
+
+    </VBox>
+</AnchorPane>

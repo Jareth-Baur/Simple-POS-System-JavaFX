@@ -6,7 +6,7 @@
 <BorderPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="controllers.DashboardController"
-            prefWidth="1130"
+            prefWidth="1150"
             prefHeight="700"
             stylesheets="@/styles/dashboard.css">
 
@@ -21,7 +21,7 @@
 
     <!-- Sidebar -->
     <left>
-        <VBox styleClass="sidebar">
+        <VBox styleClass="sidebar" fillWidth="true">
             <Button fx:id="btnProducts"
                     text="🛍 Products"
                     onAction="#handleProducts"

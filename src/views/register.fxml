@@ -10,23 +10,31 @@
             xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="controllers.RegisterController"
-            prefWidth="400" prefHeight="550"
+            prefWidth="400" prefHeight="500"
             stylesheets="@/styles/auth.css"
-            styleClass="auth-pane">
+            styleClass="auth-pane register">
 
-    <VBox alignment="CENTER" layoutX="50" layoutY="120" prefWidth="300"
-          styleClass="auth-box">
+    <VBox alignment="CENTER"
+          prefWidth="320"
+          styleClass="auth-box"
+          AnchorPane.leftAnchor="40"
+          AnchorPane.rightAnchor="40"
+          AnchorPane.topAnchor="90">
 
         <Label text="Create Account" styleClass="auth-title"/>
 
-        <TextField fx:id="emailField" promptText="Email" styleClass="text-input"/>
-        <PasswordField fx:id="passwordField" promptText="Password" styleClass="text-input"/>
+        <TextField fx:id="emailField"
+                   promptText="Email"
+                   styleClass="text-input"/>
+
+        <PasswordField fx:id="passwordField"
+                       promptText="Password"
+                       styleClass="text-input"/>
 
         <Button text="Register"
-        onAction="#handleRegister"
-        styleClass="auth-button"
-        defaultButton="true"/>
-
+                onAction="#handleRegister"
+                styleClass="auth-button"
+                defaultButton="true"/>
 
         <Hyperlink text="Already have an account? Login"
                    onAction="#switchToLogin"

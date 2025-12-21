@@ -31,6 +31,8 @@ public class Main extends Application {
         scene.getStylesheets().add(Main.class.getResource("/styles/base.css").toExternalForm());
         scene.getStylesheets().add(Main.class.getResource("/styles/components.css").toExternalForm());
         primaryStage.setScene(scene);
+        primaryStage.sizeToScene();   // important
+        primaryStage.centerOnScreen(); // 👈 THIS is the key
     }
 
     public static void main(String[] args) {
