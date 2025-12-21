@@ -1,7 +1,6 @@
 # 📦 Simple POS System (JavaFX)
 
 A desktop-based **Point of Sale (POS) System** developed using **JavaFX** and **MySQL (MariaDB)**.  
-This project was created to fulfill **Laboratory Activities #5–#10**, covering inventory management, POS transactions, and sales reporting.
 
 ---
 
