@@ -78,3 +78,8 @@ Main tables used in the system:
 Foreign key constraints and database transactions are used to maintain data integrity.
 
 ---
+
+## Screenshots
+
+<img width="1148" height="727" alt="image" src="https://github.com/user-attachments/assets/fc0d4d02-451a-4c7d-9873-41983e5867c6" />
+
