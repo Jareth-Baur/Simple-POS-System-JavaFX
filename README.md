@@ -79,7 +79,35 @@ Foreign key constraints and database transactions are used to maintain data inte
 
 ---
 
+## ⚙️ Setup Guide
+
+### 1️⃣ Clone the Project
+
+```bash
+git clone https://github.com/Jareth-Baur/Simple-POS-System-JavaFX.git
+cd Simple-POS-System-JavaFX
+```
+
+### 2️⃣ Set Up the Database
+
+1. Open **MySQL** and create a new database:
+
+   ```sql
+   CREATE DATABASE pos_system;
+   ```
+2. Import the provided SQL file:
+
+   ```sql
+   source pos_system.sql;
+   ```
+3. Update your database credentials inside:
+
+   ```
+   utils/DatabaseConnection.java
+   ```
+
 ## Screenshots
 
 <img width="1148" height="727" alt="image" src="https://github.com/user-attachments/assets/fc0d4d02-451a-4c7d-9873-41983e5867c6" />
 
+<img width="1149" height="728" alt="image" src="https://github.com/user-attachments/assets/ce63d964-4fe2-4d24-b1a6-a5f7b7aef558" />
